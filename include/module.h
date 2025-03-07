@@ -133,6 +133,17 @@ public:
     void RegisterNativeModule(const std::string& module_id, v8::Local<v8::Object> exports);
     
     /**
+     * @brief Get a native module by ID
+     * 
+     * Retrieves a previously registered native module.
+     * 
+     * @param module_id Module identifier (e.g., 'fs')
+     * @param result Pointer to store the result
+     * @return true if the module was found, false otherwise
+     */
+    bool GetNativeModule(const std::string& module_id, v8::Local<v8::Value>* result);
+    
+    /**
      * @brief Get the Runtime instance
      * 
      * @return Pointer to the Runtime instance

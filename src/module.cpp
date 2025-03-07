@@ -191,6 +191,19 @@ void ModuleSystem::RegisterNativeModule(const std::string& module_id, v8::Local<
     native_modules_[module_id].Reset(isolate, exports);
 }
 
+// Get a native module by ID
+bool ModuleSystem::GetNativeModule(const std::string& module_id, v8::Local<v8::Value>* result) {
+    v8::Isolate* isolate = runtime_->GetIsolate();
+    
+    auto it = native_modules_.find(module_id);
+    if (it != native_modules_.end()) {
+        *result = v8::Local<v8::Object>::New(isolate, it->second);
+        return true;
+    }
+    
+    return false;
+}
+
 // Get the runtime
 Runtime* ModuleSystem::GetRuntime() const {
     return runtime_;
@@ -218,8 +231,8 @@ void Require(const v8::FunctionCallbackInfo<v8::Value>& args) {
     // Get the module ID
     v8::String::Utf8Value module_id(isolate, args[0]);
     
-    // Get the runtime from the external data
-    Runtime* runtime = static_cast<Runtime*>(args.Data().As<v8::External>()->Value());
+    // Get the runtime from the isolate's data slot
+    Runtime* runtime = static_cast<Runtime*>(isolate->GetData(0));
     
     // Get the module system
     ModuleSystem* module_system = runtime->GetModuleSystem();

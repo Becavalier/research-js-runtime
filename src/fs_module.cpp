@@ -94,34 +94,69 @@ void Exists(const v8::FunctionCallbackInfo<v8::Value>& args) {
 
 // Register the fs module
 void RegisterFsModule(Runtime* runtime) {
-    v8::Isolate* isolate = runtime->GetIsolate();
-    v8::HandleScope scope(isolate);
+    std::cout << "RegisterFsModule: Starting..." << std::endl;
     
-    // Create a new context
-    v8::Local<v8::Context> context = isolate->GetCurrentContext();
-    v8::Context::Scope context_scope(context);
-    
-    // Create the fs module object
-    v8::Local<v8::Object> fs = v8::Object::New(isolate);
-    
-    // Add the readFile function
-    fs->Set(context, 
-        v8::String::NewFromUtf8(isolate, "readFile").ToLocalChecked(),
-        v8::Function::New(context, ReadFile, v8::External::New(isolate, runtime)).ToLocalChecked()
-    ).Check();
-    
-    // Add the writeFile function
-    fs->Set(context, 
-        v8::String::NewFromUtf8(isolate, "writeFile").ToLocalChecked(),
-        v8::Function::New(context, WriteFile, v8::External::New(isolate, runtime)).ToLocalChecked()
-    ).Check();
-    
-    // Add the exists function
-    fs->Set(context, 
-        v8::String::NewFromUtf8(isolate, "exists").ToLocalChecked(),
-        v8::Function::New(context, Exists, v8::External::New(isolate, runtime)).ToLocalChecked()
-    ).Check();
-    
-    // Register the fs module
-    runtime->GetModuleSystem()->RegisterNativeModule("fs", fs);
+    try {
+        v8::Isolate* isolate = runtime->GetIsolate();
+        std::cout << "RegisterFsModule: Got isolate" << std::endl;
+        
+        // Create a handle scope
+        v8::HandleScope scope(isolate);
+        std::cout << "RegisterFsModule: Created handle scope" << std::endl;
+        
+        // Create a new context for module initialization
+        v8::Local<v8::Context> context = v8::Context::New(isolate);
+        v8::Context::Scope context_scope(context);
+        std::cout << "RegisterFsModule: Created and entered context" << std::endl;
+        
+        // Create the fs module object
+        v8::Local<v8::Object> fs = v8::Object::New(isolate);
+        std::cout << "RegisterFsModule: Created fs object" << std::endl;
+        
+        // Add the readFile function
+        std::cout << "RegisterFsModule: Adding readFile function..." << std::endl;
+        v8::Local<v8::Function> readFile = v8::Function::New(
+            context, 
+            ReadFile
+        ).ToLocalChecked();
+        fs->Set(
+            context,
+            v8::String::NewFromUtf8(isolate, "readFile").ToLocalChecked(),
+            readFile
+        ).Check();
+        
+        // Add the writeFile function
+        std::cout << "RegisterFsModule: Adding writeFile function..." << std::endl;
+        v8::Local<v8::Function> writeFile = v8::Function::New(
+            context, 
+            WriteFile
+        ).ToLocalChecked();
+        fs->Set(
+            context,
+            v8::String::NewFromUtf8(isolate, "writeFile").ToLocalChecked(),
+            writeFile
+        ).Check();
+        
+        // Add the exists function
+        std::cout << "RegisterFsModule: Adding exists function..." << std::endl;
+        v8::Local<v8::Function> exists = v8::Function::New(
+            context, 
+            Exists
+        ).ToLocalChecked();
+        fs->Set(
+            context,
+            v8::String::NewFromUtf8(isolate, "exists").ToLocalChecked(),
+            exists
+        ).Check();
+        
+        // Register the fs module
+        std::cout << "RegisterFsModule: Registering module with ModuleSystem..." << std::endl;
+        runtime->GetModuleSystem()->RegisterNativeModule("fs", fs);
+        
+        std::cout << "RegisterFsModule: Complete" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Exception in RegisterFsModule: " << e.what() << std::endl;
+    } catch (...) {
+        std::cerr << "Unknown exception in RegisterFsModule" << std::endl;
+    }
 } 

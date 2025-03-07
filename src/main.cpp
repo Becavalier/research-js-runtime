@@ -48,42 +48,55 @@ void Print(const v8::FunctionCallbackInfo<v8::Value>& args) {
  * @return int Exit code (0 for success, non-zero for failure)
  */
 int main(int argc, char* argv[]) {
-    // Check if a JavaScript file was provided as a command-line argument
+    std::cout << "Starting main function..." << std::endl;
+    
+    // Check if a JavaScript file was provided
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <js-file>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <script.js>" << std::endl;
         return 1;
     }
     
-    // Initialize the V8 JavaScript engine and platform
+    std::cout << "Initializing runtime..." << std::endl;
+    
+    // Initialize the V8 platform
     if (!Runtime::Initialize()) {
-        std::cerr << "Failed to initialize runtime" << std::endl;
+        std::cerr << "Failed to initialize V8" << std::endl;
         return 1;
     }
     
-    // Create a runtime instance that will execute JavaScript code
+    std::cout << "Creating runtime instance..." << std::endl;
+    
+    // Create a new runtime instance
     Runtime runtime;
     
-    // Register the native print function to make it available in JavaScript
+    // Register the native print function
+    std::cout << "Registering print function..." << std::endl;
     runtime.RegisterNativeFunction("print", Print);
     
-    // Register the process module with command-line arguments
-    // This provides access to argv, env, and other process-related functionality
+    // Register the process module
+    std::cout << "Registering process module..." << std::endl;
     RegisterProcessModule(&runtime, argc, argv);
     
-    // Execute the provided JavaScript file
+    std::cout << "Executing file: " << argv[1] << std::endl;
+    
+    // Execute the JavaScript file
     if (!runtime.ExecuteFile(argv[1])) {
         std::cerr << "Failed to execute file: " << argv[1] << std::endl;
         Runtime::Shutdown();
         return 1;
     }
     
-    // Keep the main thread alive to allow the event loop to process events
-    // In a real implementation, we would have a more sophisticated way to
-    // determine when to exit (e.g., when all pending tasks are completed)
-    std::this_thread::sleep_for(std::chrono::seconds(60));
+    std::cout << "File executed successfully, waiting for event loop..." << std::endl;
     
-    // Shutdown the runtime and clean up V8 resources
+    // Wait for a moment to allow async operations to complete
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    
+    std::cout << "Shutting down runtime..." << std::endl;
+    
+    // Shutdown the V8 platform
     Runtime::Shutdown();
+    
+    std::cout << "Runtime shutdown complete" << std::endl;
     
     return 0;
 } 

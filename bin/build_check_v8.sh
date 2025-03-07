@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Find V8 include directory
-V8_INCLUDE_DIR=$(find /usr /usr/local /opt/local /opt/homebrew -name "v8.h" -type f 2>/dev/null | head -n 1 | xargs dirname)
+V8_INCLUDE_DIR=$(find ~/Repo/v8-home /usr /usr/local /opt/local /opt/homebrew -name "v8.h" -type f 2>/dev/null | head -n 1 | xargs dirname)
 
 if [ -z "$V8_INCLUDE_DIR" ]; then
     echo "Error: Could not find V8 include directory"
@@ -11,7 +11,7 @@ fi
 echo "Found V8 include directory: $V8_INCLUDE_DIR"
 
 # Find V8 library
-V8_LIB_DIR=$(find /usr /usr/local /opt/local /opt/homebrew -name "libv8*.so" -o -name "libv8*.dylib" 2>/dev/null | head -n 1 | xargs dirname)
+V8_LIB_DIR=$(find /Users/jasonyu/Repo/v8-home/v8/out.gn/arm64.release/obj /usr /usr/local /opt/local /opt/homebrew -name "libv8*.a" -o 2>/dev/null | head -n 1 | xargs dirname)
 
 if [ -z "$V8_LIB_DIR" ]; then
     echo "Error: Could not find V8 library directory"

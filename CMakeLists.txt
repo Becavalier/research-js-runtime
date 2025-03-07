@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(tiny_nodejs)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add the cmake directory to the module path
@@ -18,6 +18,11 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 find_package(V8 REQUIRED)
 include_directories(${V8_INCLUDE_DIR})
 
+# Add V8 specific compiler flags
+add_definitions(-DV8_COMPRESS_POINTERS)
+add_definitions(-DV8_31BIT_SMIS_ON_64BIT_ARCH)
+add_definitions(-DV8_ENABLE_SANDBOX)
+
 # Find libuv package
 find_package(LibUV REQUIRED)
 include_directories(${LIBUV_INCLUDE_DIR})
@@ -28,8 +33,24 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 # Create executable
 add_executable(tiny_node ${SOURCES})
 
-# Link libraries
-target_link_libraries(tiny_node ${V8_LIBRARIES} ${LIBUV_LIBRARIES})
+# Additional dependencies required for static linking with V8
+if(APPLE)
+  # macOS specific dependencies
+  find_library(CORE_FOUNDATION CoreFoundation)
+  find_library(SECURITY Security)
+  target_link_libraries(tiny_node ${CORE_FOUNDATION} ${SECURITY})
+  
+  # Additional compiler flags for macOS
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+endif()
+
+# Link libraries - static linking for V8
+target_link_libraries(tiny_node 
+  ${V8_LIBRARIES}
+  ${LIBUV_LIBRARIES}
+  pthread
+  dl
+)
 
 # Installation
 install(TARGETS tiny_node DESTINATION bin)

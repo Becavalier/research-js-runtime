@@ -158,6 +158,11 @@ private:
     std::unique_ptr<ModuleSystem> module_system_;
     
     /**
+     * @brief Map of native function names to callbacks
+     */
+    std::unordered_map<std::string, v8::FunctionCallback> native_functions_;
+    
+    /**
      * @brief Read a file into a string
      * 
      * @param filename Path to the file to read
