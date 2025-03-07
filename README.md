@@ -11,6 +11,12 @@ This project aims to build a lightweight JavaScript runtime from scratch, implem
 - Basic I/O operations.
 - Simple module system.
 
+## Comprehensive Documentation
+
+A complete implementation guide is available in the `docs/` directory. This guide explains how the runtime works in detail, covering everything from the V8 engine integration to module system implementation. It's a great resource for understanding how JavaScript runtimes work under the hood.
+
+To access the documentation, navigate to the [docs/README.md](docs/README.md) file.
+
 ## Roadmap
 
 ### Phase 1: Setup and JavaScript Engine Integration.
@@ -50,6 +56,12 @@ research-js-runtime/
 │   └── run_example.sh         # Run JavaScript code snippets directly
 │
 ├── build/                 # Build output directory
+│
+├── docs/                  # Comprehensive documentation
+│   ├── README.md             # Documentation index
+│   ├── 01-introduction.md    # Introduction to the runtime
+│   ├── 02-v8-basics.md       # V8 engine basics
+│   └── ...                   # Additional documentation chapters
 │
 ├── examples/              # Example JavaScript programs
 │   ├── hello.js              # Basic example demonstrating core features
